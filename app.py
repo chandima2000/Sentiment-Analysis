@@ -1,12 +1,9 @@
-from flask import Flask, request, jsonify, send_file, render_template
-import re
+from flask import Flask, request, jsonify, render_template
+from utils.utils import single_prediction
+from sklearn.ensemble import RandomForestClassifier 
 
-from nltk.corpus import stopwords
-from nltk.stem.porter import PorterStemmer
-import pandas as pd
 import pickle
 
-STOPWORDS = set(stopwords.words("english"))
 
 app= Flask(__name__)
 
@@ -28,5 +25,23 @@ def predict():
     return render_template("predict.html")
 
 
+
+@app.route("/get-predict",methods=["POST"])
+def prediction():
+    
+    predictor = pickle.load(open(r"models/rfmodel.pkl", "rb"))
+    scaler = pickle.load(open(r"models/scaler.pkl", "rb"))
+    tfidf = pickle.load(open(r"models/tfidfVectorizer.pkl", "rb"))
+
+    try:
+         text_input = request.json["text"]
+         predicted_sentiment = single_prediction(predictor, scaler, tfidf, text_input)
+
+         return jsonify({"prediction": predicted_sentiment})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(host="127.0.0.1",port=5000, debug=True)
