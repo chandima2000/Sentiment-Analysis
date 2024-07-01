@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from utils.utils import single_prediction
+from pipeline.prediction_pipeline import prediction_pipeline
 from sklearn.ensemble import RandomForestClassifier 
 
 import pickle
@@ -35,7 +35,7 @@ def prediction():
 
     try:
          text_input = request.json["text"]
-         predicted_sentiment = single_prediction(predictor, scaler, tfidf, text_input)
+         predicted_sentiment = prediction_pipeline(predictor, scaler, tfidf, text_input)
 
          return jsonify({"prediction": predicted_sentiment})
 

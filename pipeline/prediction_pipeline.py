@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 STOPWORDS = set(stopwords.words("english"))
 
 
-def single_prediction(predictor, scaler, tfidf, text_input):
+def prediction_pipeline(predictor, scaler, tfidf, text_input):
 
     corpus = []
     stemmer = PorterStemmer()
